@@ -60,13 +60,14 @@ loader.load(
 	'./CG_assn3.obj',
 	// called when resource is loaded
 	function ( object ) {
-		// obj = object;
-		// object.traverse( function ( child ) {
-		// 	if ( child instanceof THREE.Mesh ) {
-		// 		 child.material.ambient.setHex(0xFF0000);
-		// 		 child.material.color.setHex(0x00FF00);
-		// 		}
-		// 	} );
+		object.traverse( function ( obj ) {
+			if ( obj.isMesh ) {
+			  //  obj.material.ambient.set(0xFF0000);
+				obj.material.color.setHex( 0x00ff00 );
+				obj.material.needsUpdate = true;
+				console.log(obj)
+			}
+		});
 		object.name = "sphere";
 		object.position.y = 0;
 		scene.add( object );
@@ -85,6 +86,8 @@ loader.load(
 
 	}
 );
+
+scene.add(new THREE.AmbientLight(0xffffff))
 
 // let color = new THREE.Color( 0xFFB6C1 );
 
