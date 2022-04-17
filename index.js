@@ -1,10 +1,7 @@
-// import {OrbitControls} from 'https://cdn.skypack.dev/three/examples/jsm/controls/OrbitControls.js';
-// import * as THREE from 'https://unpkg.com/three/build/three.module.js';
 import * as THREE from 'three'
-// import { GLTFLoader } from 'https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js';
 import { OBJLoader } from 'https://unpkg.com/three/examples/jsm/loaders/OBJLoader.js';
+// import TrackballControls from 'https://cdn.jsdelivr.net/npm/three-trackballcontrols@0.0.8/index.min.js';
 
-// import { OBJLoader } from "https://unpkg.com/three/examples/jsm/loaders/OBJLoader.js";
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color( 0xe5e5e5 );
@@ -55,39 +52,53 @@ document.body.appendChild( renderer.domElement );
 const loader = new OBJLoader();
 let obj;
 // load a resource
-loader.load(
-	// resource URL
-	'./CG_assn3.obj',
-	// called when resource is loaded
-	function ( object ) {
-		object.traverse( function ( obj ) {
-			if ( obj.isMesh ) {
-			  //  obj.material.ambient.set(0xFF0000);
-				obj.material.color.setHex( 0x00ff00 );
-				obj.material.needsUpdate = true;
-				console.log(obj)
-			}
-		});
-		object.name = "sphere";
-		object.position.y = 0;
-		scene.add( object );
 
-	},
-	// called when loading is in progresses
-	function ( xhr ) {
+function loadMeshObj(file, objName){
 
-		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+	loader.load(
+		// resource URL
+		file,
+		// called when resource is loaded
+		function ( object ) {
+			object.traverse( function ( obj ) {
+				if ( obj.isMesh ) {
+				  //  obj.material.ambient.set(0xFF0000);
+					obj.material.color.setHex( 0x00ff00 );
+					// obj.material.needsUpdate = true;
+					console.log(obj)
+				}
+			});
+			object.name = objName;
+			object.position['x']+=2;
+			// console.log();
+			// object.translateOnAxis(THREE.Vector3(1,0,0),10);
+			scene.add( object );
+	
+		},
+		// called when loading is in progresses
+		function ( xhr ) {
+	
+			console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+	
+		},
+		// called when loading has errors
+		function ( error ) {
+	
+			console.log( 'An error happened' );
+	
+		}
+	);
 
-	},
-	// called when loading has errors
-	function ( error ) {
+}
 
-		console.log( 'An error happened' );
+loadMeshObj('./cube.obj','cube');
 
-	}
-);
+// console.log(scene.getObjectByName("sphere").isObject3D());
 
 scene.add(new THREE.AmbientLight(0xffffff))
+
+// const controls = new TrackballControls(scene.getObjectByName("cube"), renderer.domElement);
+
 
 // let color = new THREE.Color( 0xFFB6C1 );
 
@@ -100,8 +111,7 @@ scene.add(new THREE.AmbientLight(0xffffff))
 camera.position.z = 5;
 
 function animate() {
-    // renderer.clearRect();
-	requestAnimationFrame( animate );
+    requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 }
 animate();
