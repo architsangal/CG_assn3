@@ -117,9 +117,10 @@ document.addEventListener('keydown', function (event) {
 	if(mode == "i"){
 		if(selectedShape!=null){
 			bbox = new THREE.Box3().setFromObject(selectedShape)
+			limits = computeLimits(bbox)
 			// console.log(bbox)
 		}
-		limits = computeLimits(bbox)
+		
 		// console.log(limits)
 	}
 
@@ -129,15 +130,6 @@ document.addEventListener('keydown', function (event) {
 	}
 
 	else if(event.key == "s"){
-		// scene.getObjectByName("light").visible = false;
-
-		// for (let i = 0; i < primitives; i++) {
-		// 	let lightName = "l" + (i + 3).toString()
-		// 	scene.getObjectByName(lightName).visible = false;
-		// }
-
-		// let shape = selectedShape.clone(true);
-		// scene.remove(selectedShape)
 
 		selectedShape.traverse(function (obj) {
 			console.log("obj.isMesh = ", obj.isMesh)
@@ -156,25 +148,12 @@ document.addEventListener('keydown', function (event) {
 					console.log("world")
 				}
 				obj.material.needsUpdate = true;
-				// console.log(obj.material.needsUpdate)
 				
-				// obj.material = new THREE.MeshLambertMaterial()
-				// console.log(obj.geometry)
-				// let geo = Object.assign({},obj.geometry)
-				
-				// obj.material = material
 				obj.material.color = col;
 				console.log(obj.material)
 			}
 		});
-		// scene.add(shape)
-
-		// scene.getObjectByName("light").visible = true;
 		
-		// for (let i = 0; i < primitives; i++) {
-		// 	let lightName = "l" + (i + 3).toString()
-		// 	scene.getObjectByName(lightName).visible = true;
-		// }
 	}
 
 	else if (event.key == "i") {
@@ -264,10 +243,15 @@ document.addEventListener('keydown', function (event) {
 		}
 	}
 
-	// if(selectedShape!=null){
-	// 	bbox = new THREE.Box3().setFromObject(selectedShape)
-	// 	console.log(bbox.max['x'])
-	// }
+	else if (event.key == "0" && mode == "i") {
+		let lightName = "l" + selectedShape.name
+		scene.getObjectByName(lightName).visible = false;
+	}
+
+	else if (event.key == "1" && mode == "i") {
+		let lightName = "l" + selectedShape.name
+		scene.getObjectByName(lightName).visible = true;
+	}
 
 }, false);
 
