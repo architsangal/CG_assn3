@@ -96,7 +96,7 @@ const l3 = new THREE.PointLight( 0xffffff, 1, 100 );
 l3.position.set( 0, 0, 0 );
 l3.name = "l3";
 scene.add( l3 );
-console.log(l3.isLight)
+console.log(l3)
 
 const l4 = new THREE.PointLight( 0xffffff, 1, 100 );
 l4.position.set( 0, 0, 0 );
@@ -110,6 +110,9 @@ let mode = "none";
 let selectedShape = null;
 let moveBy = 0.05;
 let offset = 3;
+
+const rotationMatrix = new THREE.Matrix4();
+const targetQuaternion = new THREE.Quaternion();
 
 document.addEventListener('keydown', function (event) {
 	console.log("Key pressed = ", event.key);
@@ -253,6 +256,15 @@ document.addEventListener('keydown', function (event) {
 		let lightName = "l" + selectedShape.name
 		scene.getObjectByName(lightName).visible = true;
 	}
+
+	else if (event.key == "(") {
+		rotationMatrix.lookAt(new THREE.Vector3(0,0,1), selectedShape.position, selectedShape.up );
+		console.log(rotationMatrix)
+		targetQuaternion.setFromRotationMatrix(rotationMatrix);
+		selectedShape.quaternion.rotateTowards(targetQuaternion, 0.05).normalize();
+	}
+
+
 
 }, false);
 
