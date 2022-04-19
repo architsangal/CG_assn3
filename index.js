@@ -19,7 +19,6 @@ document.body.appendChild(canvas);
 const loader = new OBJLoader();
 
 let primitives = 0;
-// let OBJECT;
 let bbox;
 
 function loadMeshObj(file, objID, objColor) {
@@ -29,15 +28,8 @@ function loadMeshObj(file, objID, objColor) {
 		file,
 		// called when resource is loaded
 		function (object) {
-			// const material = new THREE.MeshLambertMaterial()
-			// console.log(material.needsUpdate)
 			object.traverse(function (obj) {
 				if (obj.isMesh) {
-					console.log(obj.material)
-					// obj.material = new THREE.MeshLambertMaterial()
-					// console.log(obj.geometry)
-					// let geo = Object.assign({},obj.geometry)
-					// obj.material = material
 					obj.material.color.setHex(objColor);
 					console.log(obj.material)
 				}
@@ -48,8 +40,8 @@ function loadMeshObj(file, objID, objColor) {
 			scene.add(object);
 			bbox = new THREE.Box3().setFromObject(scene.getObjectByName(objID))
 			console.log(bbox)
-			primitives += 1;
-			// OBJECT = object;
+			// primitives += 1;
+			console.log(`primitives = ${primitives}`)
 
 		},
 		// called when loading is in progresses
@@ -65,7 +57,7 @@ function loadMeshObj(file, objID, objColor) {
 
 		// }
 	);
-
+	primitives += 1;
 }
 
 function computeLimits(bbox) {
@@ -87,6 +79,9 @@ function computeLimits(bbox) {
 }
 
 loadMeshObj('./cube.obj', (primitives + 3).toString(), 0x00ff00);
+// console.log("objID = ", primitives + 3) 
+loadMeshObj('./CG_assn3.obj', (primitives + 3).toString(), 0xff0000);
+// console.log("objID = ", primitives + 3)
 
 let light = new THREE.AmbientLight(0xffffff)
 light.name = "light"
@@ -98,10 +93,16 @@ scene.getObjectByName("light").visible = false;
 // scene.add(new THREE.AmbientLight(0xffffff))
 
 const l3 = new THREE.PointLight( 0xffffff, 1, 100 );
-l3.position.set( 10, 10, 10 );
+l3.position.set( 0, 0, 0 );
 l3.name = "l3";
 scene.add( l3 );
 console.log(l3.isLight)
+
+const l4 = new THREE.PointLight( 0xffffff, 1, 100 );
+l4.position.set( 0, 0, 0 );
+l4.name = "l4";
+scene.add( l4 );
+console.log(l4.isLight)
 
 camera.position.z = 5;
 
@@ -136,7 +137,7 @@ document.addEventListener('keydown', function (event) {
 			if (obj.isMesh) {
 				let col = obj.material.color
 				// obj.material.dispose()
-				console.log("obj.isMeshPhongMaterial = ", obj.isMeshPhongMaterial)
+				// console.log("obj.isMeshPhongMaterial = ", obj.isMeshPhongMaterial)
 				// console.log(obj.material.type = 'MeshPhongMaterial')
 				if(obj.material.type == 'MeshPhongMaterial'){
 					obj.material.dispose()
@@ -173,7 +174,7 @@ document.addEventListener('keydown', function (event) {
 			}
 		}
 		
-		console.log(scene.getObjectByName(lightName).position)
+		// console.log(scene.getObjectByName(lightName).position)
 	}
 
 	else if (event.key == "X") {
