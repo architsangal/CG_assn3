@@ -33,12 +33,13 @@ function loadMeshObj(file, objID, objColor) {
 			// console.log(material.needsUpdate)
 			object.traverse(function (obj) {
 				if (obj.isMesh) {
+					console.log(obj.material)
 					// obj.material = new THREE.MeshLambertMaterial()
 					// console.log(obj.geometry)
 					// let geo = Object.assign({},obj.geometry)
 					// obj.material = material
 					obj.material.color.setHex(objColor);
-					console.log(obj)
+					console.log(obj.material)
 				}
 			});
 			console.log("isObject3D = ", object.isObject3D);
@@ -97,7 +98,7 @@ scene.getObjectByName("light").visible = false;
 // scene.add(new THREE.AmbientLight(0xffffff))
 
 const l3 = new THREE.PointLight( 0xffffff, 1, 100 );
-l3.position.set( 0, 0, 0 );
+l3.position.set( 10, 10, 10 );
 l3.name = "l3";
 scene.add( l3 );
 console.log(l3.isLight)
@@ -128,16 +129,31 @@ document.addEventListener('keydown', function (event) {
 	}
 
 	else if(event.key == "s"){
+		// scene.getObjectByName("light").visible = false;
+
+		// for (let i = 0; i < primitives; i++) {
+		// 	let lightName = "l" + (i + 3).toString()
+		// 	scene.getObjectByName(lightName).visible = false;
+		// }
+
+		// let shape = selectedShape.clone(true);
+		// scene.remove(selectedShape)
+
 		selectedShape.traverse(function (obj) {
+			console.log("obj.isMesh = ", obj.isMesh)
 			if (obj.isMesh) {
 				let col = obj.material.color
 				// obj.material.dispose()
-				if(obj.isMeshPhongMaterial){
+				console.log("obj.isMeshPhongMaterial = ", obj.isMeshPhongMaterial)
+				// console.log(obj.material.type = 'MeshPhongMaterial')
+				if(obj.material.type == 'MeshPhongMaterial'){
 					obj.material.dispose()
 					obj.material = new THREE.MeshLambertMaterial()
+					console.log("hello")
 				} else {
 					obj.material.dispose()
 					obj.material = new THREE.MeshPhongMaterial()
+					console.log("world")
 				}
 				obj.material.needsUpdate = true;
 				// console.log(obj.material.needsUpdate)
@@ -151,6 +167,14 @@ document.addEventListener('keydown', function (event) {
 				console.log(obj.material)
 			}
 		});
+		// scene.add(shape)
+
+		// scene.getObjectByName("light").visible = true;
+		
+		// for (let i = 0; i < primitives; i++) {
+		// 	let lightName = "l" + (i + 3).toString()
+		// 	scene.getObjectByName(lightName).visible = true;
+		// }
 	}
 
 	else if (event.key == "i") {
