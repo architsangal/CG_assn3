@@ -67,6 +67,24 @@ function loadMeshObj(file, objID, objColor) {
 
 }
 
+function computeLimits(bbox) {
+	let min, max, mid, l;
+	let char = 'x';
+	let limits = [];
+	while(char != '{') {
+		let lim = [];
+		l = (bbox.max[char] - bbox.min[char]) * 1.25;
+		mid = (bbox.max[char] + bbox.min[char]) * 0.5;
+		min = mid - (l/2);
+		max = mid + (l/2);
+
+		lim.push(min); lim.push(max)
+		limits.push(lim)
+		char = String.fromCharCode(char.charCodeAt(0) + 1)
+	}
+	return limits;
+}
+
 loadMeshObj('./cube.obj', (primitives + 3).toString(), 0x00ff00);
 
 let light = new THREE.AmbientLight(0xffffff)
@@ -78,38 +96,56 @@ scene.getObjectByName("light").visible = false;
 // let bbox = new THREE.Box3().setFromObject(scene.getObjectByName("3"));
 // scene.add(new THREE.AmbientLight(0xffffff))
 
-const l1 = new THREE.PointLight( 0xffffff, 1, 100 );
-l1.position.set( 10, 10, 10 );
-l1.name = "l1";
-scene.add( l1 );
-console.log(l1.isLight)
+const l3 = new THREE.PointLight( 0xffffff, 1, 100 );
+l3.position.set( 0, 0, 0 );
+l3.name = "l3";
+scene.add( l3 );
+console.log(l3.isLight)
 
 camera.position.z = 5;
 
 let mode = "none";
 let selectedShape = null;
 let moveBy = 0.05;
+let offset = 3;
 
 document.addEventListener('keydown', function (event) {
 	console.log("Key pressed = ", event.key);
+	
+	let limits;
+	if(mode == "i"){
+		if(selectedShape!=null){
+			bbox = new THREE.Box3().setFromObject(selectedShape)
+			// console.log(bbox)
+		}
+		limits = computeLimits(bbox)
+		// console.log(limits)
+	}
 
 	if (event.key == "m") {
 		mode = "m";
+		selectedShape = null
 	}
 
 	else if(event.key == "s"){
 		selectedShape.traverse(function (obj) {
 			if (obj.isMesh) {
 				let col = obj.material.color
+				// obj.material.dispose()
 				if(obj.isMeshPhongMaterial){
+					obj.material.dispose()
 					obj.material = new THREE.MeshLambertMaterial()
 				} else {
+					obj.material.dispose()
 					obj.material = new THREE.MeshPhongMaterial()
 				}
-				console.log(col)
+				obj.material.needsUpdate = true;
+				// console.log(obj.material.needsUpdate)
+				
 				// obj.material = new THREE.MeshLambertMaterial()
 				// console.log(obj.geometry)
 				// let geo = Object.assign({},obj.geometry)
+				
 				// obj.material = material
 				obj.material.color = col;
 				console.log(obj.material)
@@ -118,38 +154,96 @@ document.addEventListener('keydown', function (event) {
 	}
 
 	else if (event.key == "i") {
+		selectedShape = null;
 		mode = "i";
 	}
 
-	else if (event.key == "x" && mode == "m") {
-		selectedShape.position['x'] -= moveBy;
-		// console.log(bbox)
+	else if (event.key == "x") {
+		let lightName = "l" + selectedShape.name
+		if(mode == "m"){
+			selectedShape.position['x'] -= moveBy;
+			scene.getObjectByName(lightName).position['x'] -= moveBy;
+		}
+		else if(mode == "i") {
+			if(scene.getObjectByName(lightName).position['x'] - moveBy >= limits[0][0] - offset) {
+				scene.getObjectByName(lightName).position['x'] -= moveBy; 
+			}
+		}
+		
+		console.log(scene.getObjectByName(lightName).position)
 	}
 
-	else if (event.key == "X" && mode == "m") {
-		selectedShape.position['x'] += moveBy;
+	else if (event.key == "X") {
+		let lightName = "l" + selectedShape.name
+		if(mode == "m"){
+			selectedShape.position['x'] += moveBy;
+			scene.getObjectByName(lightName).position['x'] += moveBy; 
+		}
+		else if(mode == "i") {
+			if(scene.getObjectByName(lightName).position['x'] + moveBy <= limits[0][1] + offset) {
+				scene.getObjectByName(lightName).position['x'] += moveBy; 
+			}
+		}
+
+		console.log(scene.getObjectByName(lightName).position)
 	}
 
-	else if (event.key == "y" && mode == "m") {
-		selectedShape.position['y'] -= moveBy;
+	else if (event.key == "y") {
+		let lightName = "l" + selectedShape.name
+		if(mode == "m") {
+			selectedShape.position['y'] -= moveBy;
+			scene.getObjectByName(lightName).position['y'] -= moveBy;
+		}
+		else if(mode == "i") {
+			if(scene.getObjectByName(lightName).position['y'] - moveBy >= limits[1][0] - offset) {
+				scene.getObjectByName(lightName).position['y'] -= moveBy; 
+			}
+		}
 	}
 
-	else if (event.key == "Y" && mode == "m") {
-		selectedShape.position['y'] += moveBy;
+	else if (event.key == "Y") {
+		let lightName = "l" + selectedShape.name
+		if(mode == "m") {
+			selectedShape.position['y'] += moveBy;
+			scene.getObjectByName(lightName).position['y'] += moveBy; 
+		}
+		else if(mode == "i") {
+			if(scene.getObjectByName(lightName).position['y'] + moveBy <= limits[1][1] + offset) {
+				scene.getObjectByName(lightName).position['y'] += moveBy; 
+			}
+		}
 	}
 
-	else if (event.key == "z" && mode == "m") {
-		selectedShape.position['z'] -= moveBy;
+	else if (event.key == "z") {
+		let lightName = "l" + selectedShape.name
+		if(mode == "m") {
+			selectedShape.position['z'] -= moveBy;
+			scene.getObjectByName(lightName).position['z'] -= moveBy; 
+		}
+		else if(mode == "i") {
+			if(scene.getObjectByName(lightName).position['z'] - moveBy >= limits[2][0] - offset) {
+				scene.getObjectByName(lightName).position['z'] -= moveBy; 
+			}
+		}
 	}
 
-	else if (event.key == "Z" && mode == "m") {
-		selectedShape.position['z'] += moveBy;
+	else if (event.key == "Z") {
+		let lightName = "l" + selectedShape.name
+		if(mode == "m") {
+			selectedShape.position['z'] += moveBy;
+			scene.getObjectByName(lightName).position['z'] += moveBy; 
+		}
+		else if(mode == "i") {
+			if(scene.getObjectByName(lightName).position['z'] + moveBy <= limits[2][1] + offset) {
+				scene.getObjectByName(lightName).position['z'] += moveBy; 
+			}
+		}
 	}
 
-	if(selectedShape!=null){
-		bbox = new THREE.Box3().setFromObject(selectedShape)
-		console.log(bbox)
-	}
+	// if(selectedShape!=null){
+	// 	bbox = new THREE.Box3().setFromObject(selectedShape)
+	// 	console.log(bbox.max['x'])
+	// }
 
 }, false);
 
@@ -199,9 +293,15 @@ function selectShape(pixelColor) {
 }
 
 canvas.addEventListener('mousedown', (event) => {
-	if (mode == "m") {
+	if (mode == "m" || mode == "i") {
 		scene.getObjectByName("light").visible = true;
-		scene.getObjectByName("l1").visible = false;
+
+		for (let i = 0; i < primitives; i++) {
+			let lightName = "l" + (i + 3).toString()
+			scene.getObjectByName(lightName).visible = false;
+		}
+
+		// scene.getObjectByName("l1").visible = false;
 		// const rect = renderer.getDomElement().getBoundingClientRect();
 		const rect = canvas.getBoundingClientRect();
 
@@ -234,7 +334,11 @@ canvas.addEventListener('mousedown', (event) => {
 		let shape_id = selectShape(pixelColor);
 
 		scene.getObjectByName("light").visible = false;
-		scene.getObjectByName("l1").visible = true;
+		
+		for (let i = 0; i < primitives; i++) {
+			let lightName = "l" + (i + 3).toString()
+			scene.getObjectByName(lightName).visible = true;
+		}
 		
 		console.log(shape_id)
 
@@ -248,7 +352,7 @@ canvas.addEventListener('mousedown', (event) => {
 			selectedShape = scene.getObjectByName(shape_id);
 			// console.log(selectedShape);
 		}
-	}
+	} 
 });
 
 
