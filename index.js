@@ -5,7 +5,7 @@ import { OBJLoader } from 'https://unpkg.com/three/examples/jsm/loaders/OBJLoade
 const scene = new THREE.Scene();
 
 // TODO comment the below
-scene.background = new THREE.Color(0xe5e5e5);
+// scene.background = new THREE.Color(0xe5e5e5);
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -21,7 +21,7 @@ const loader = new OBJLoader();
 let primitives = 0;
 let bbox;
 
-function loadMeshObj(file, objID, objColor) {
+function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 
 	loader.load(
 		// resource URL
@@ -35,13 +35,23 @@ function loadMeshObj(file, objID, objColor) {
 			});
 
 			object.name = objID;
-			
+			object.scale['x'] = scale[0]
+			object.scale['y'] = scale[0]
+			object.scale['z'] = scale[0]
+			object.position['x'] = pos[0]
+			object.position['y'] = pos[1]
+			object.position['z'] = pos[2]
+
+			console.log(object)
 			scene.add(object);
 			bbox = new THREE.Box3().setFromObject(scene.getObjectByName(objID))
 
 
 		},
 	);
+	// if(scale!=null && scale != undefined){
+	// 	scene.getObjectByName(objID).scale.set(scale[0],scale[1],scale[2]);
+	// }
 	primitives += 1;
 }
 
@@ -63,8 +73,14 @@ function computeLimits(bbox) {
 	return limits;
 }
 
-loadMeshObj('./cube.obj', (primitives + 3).toString(), 0x00ff00);
-loadMeshObj('./CG_assn3.obj', (primitives + 3).toString(), 0xff0000);
+loadMeshObj('./sphere.obj', (primitives + 3).toString(), 0x00ff00, [1,1,1],[-2.5,2.25,0]);
+loadMeshObj('./teapot.obj', (primitives + 3).toString(), 0xff0000, [0.5,0.5,0.5],[1.25,-1.75,0]);
+
+// if(scene.getObjectByName('4') != undefined){
+// 	scene.getObjectByName("4").scale = new THREE.Vector3(0.5,0.5,0.5);
+// }
+// console.log(scene.getObjectByName('4'));
+// scene.getObjectByName("4").scale = new THREE.Vector3(0.5,0.5,0.5);
 
 let light = new THREE.AmbientLight(0xffffff)
 light.name = "light"
@@ -74,11 +90,13 @@ scene.getObjectByName("light").visible = false;
 const l3 = new THREE.PointLight( 0xffffff, 1, 100);
 l3.position.set( 0, 0, 0 );
 l3.name = "l3";
+l3.decay = 2
 scene.add( l3 );
 
 const l4 = new THREE.PointLight( 0xffffff, 1, 100 );
 l4.position.set( 0, 0, 0 );
 l4.name = "l4";
+l4.decay = 2;
 scene.add( l4 );
 
 camera.position.z = 5;
@@ -86,7 +104,7 @@ camera.position.z = 5;
 let mode = "none";
 let selectedShape = null;
 let moveBy = 0.05;
-let offset = 3;
+let offset = 1.5;
 
 document.addEventListener('keydown', function (event) {
 	console.log("Key pressed = ", event.key);
@@ -129,7 +147,7 @@ document.addEventListener('keydown', function (event) {
 		mode = "i";
 	}
 
-	else if (event.key == "a") {
+	else if (event.key == "x") {
 		let lightName = "l" + selectedShape.name
 		if(mode == "m"){
 			selectedShape.position['x'] -= moveBy;
@@ -142,7 +160,7 @@ document.addEventListener('keydown', function (event) {
 		}
 	}
 
-	else if (event.key == "d") {
+	else if (event.key == "X") {
 		let lightName = "l" + selectedShape.name
 		if(mode == "m"){
 			selectedShape.position['x'] += moveBy;
@@ -155,7 +173,7 @@ document.addEventListener('keydown', function (event) {
 		}
 	}
 
-	else if (event.key == "w") {
+	else if (event.key == "y") {
 		let lightName = "l" + selectedShape.name
 		if(mode == "m") {
 			selectedShape.position['y'] -= moveBy;
@@ -168,7 +186,7 @@ document.addEventListener('keydown', function (event) {
 		}
 	}
 
-	else if (event.key == "s") {
+	else if (event.key == "Y") {
 		let lightName = "l" + selectedShape.name
 		if(mode == "m") {
 			selectedShape.position['y'] += moveBy;
@@ -194,7 +212,7 @@ document.addEventListener('keydown', function (event) {
 		}
 	}
 
-	else if (event.key == "x") {
+	else if (event.key == "Z") {
 		let lightName = "l" + selectedShape.name
 		if(mode == "m") {
 			selectedShape.position['z'] += moveBy;
@@ -221,42 +239,42 @@ document.addEventListener('keydown', function (event) {
 		selectedShape = scene.getObjectByName(event.key)
 	}
 
-	else if (event.key == "o")
+	else if (event.key == "o" && mode == "m")
 	{
 		const quaternion = new THREE.Quaternion();
 		quaternion.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), Math.PI / 180 );
 		selectedShape.applyQuaternion( quaternion );
 	}
 
-	else if (event.key == "p")
+	else if (event.key == "p" && mode == "m")
 	{
 		const quaternion = new THREE.Quaternion();
 		quaternion.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), -Math.PI / 180 );
 		selectedShape.applyQuaternion( quaternion );
 	}
 
-	else if (event.key == "k")
+	else if (event.key == "k" && mode == "m")
 	{
 		const quaternion = new THREE.Quaternion();
 		quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / 180 );
 		selectedShape.applyQuaternion( quaternion );
 	}
 
-	else if (event.key == "l")
+	else if (event.key == "l" && mode == "m")
 	{
 		const quaternion = new THREE.Quaternion();
 		quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), -Math.PI / 180 );
 		selectedShape.applyQuaternion( quaternion );
 	}
 
-	else if (event.key == "b")
+	else if (event.key == "b" && mode == "m")
 	{
 		const quaternion = new THREE.Quaternion();
 		quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), Math.PI / 180 );
 		selectedShape.applyQuaternion( quaternion );
 	}
 
-	else if (event.key == "n")
+	else if (event.key == "n" && mode == "m")
 	{
 		const quaternion = new THREE.Quaternion();
 		quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), -Math.PI / 180 );
