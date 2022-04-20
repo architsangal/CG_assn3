@@ -47,7 +47,6 @@ function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 					obj.material = new THREE.MeshStandardMaterial()
 					setMaterialProperties(obj.material)
 					obj.material.color.setHex(objColor);
-					console.log(obj)
 				}
 			});
 
@@ -59,7 +58,6 @@ function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 			object.position['y'] = pos[1]
 			object.position['z'] = pos[2]
 			// setMaterialProperties(object)
-			console.log(object)
 			scene.add(object);
 			bbox = new THREE.Box3().setFromObject(scene.getObjectByName(objID))
 
@@ -87,8 +85,8 @@ function computeLimits(bbox) {
 	return limits;
 }
 
-loadMeshObj('./sphere.obj', (primitives + 3).toString(), 0x00ff00, [1,1,1],[-2.5,2.25,0]);
-loadMeshObj('./teapot.obj', (primitives + 3).toString(), 0xff0000, [0.5,0.5,0.5],[1.25,-1.75,0]);
+loadMeshObj('./objects/sphere.obj', (primitives + 3).toString(), 0x00ff00, [1,1,1],[-2.5,2.25,0]);
+loadMeshObj('./objects/teapot.obj', (primitives + 3).toString(), 0xff0000, [0.5,0.5,0.5],[1.25,-1.75,0]);
 
 
 let light = new THREE.AmbientLight(0xffffff)
@@ -150,7 +148,6 @@ document.addEventListener('keydown', function (event) {
 				// obj.geometry.mergeVertices()
 				obj.material.color = col;
 			}
-			console.log(obj.material)
 		});
 		
 	}
@@ -295,6 +292,65 @@ document.addEventListener('keydown', function (event) {
 	}
 
 
+}, false);
+
+let xConstrain = window.innerWidth;
+let yConstrain = window.innerHeight;
+let maxConstrain = Math.max(window.innerWidth,window.innerHeight);
+
+let lastX = undefined;
+let lastY = undefined;
+let lastZ = undefined;
+let lastVector;
+let mousedown = 0;
+
+document.addEventListener('mousedown', function(event)
+{
+	if(mousedown == 0 && mode == 'm')
+		mousedown = 1;
+	else if(mousedown == 1 && mode == 'm')
+	{
+		mousedown = 0;
+		lastX = undefined;
+		lastY = undefined;
+		lastZ = undefined;
+	}
+}, false);
+
+
+document.addEventListener('mousemove', function(event)
+{
+	if(mousedown == 1)
+	{
+		if(lastX != undefined && lastY != undefined && lastY != undefined)
+		{
+			let currentX = (2*event.clientX-xConstrain)/maxConstrain;
+			let currentY = (2*event.clientY-yConstrain)/maxConstrain;
+			let currentZ = Math.sqrt(3-currentX*currentX-currentY*currentY);
+			let currentVector = new THREE.Vector3(currentX,currentY,currentZ);
+			let axis = new THREE.Vector3();
+			axis.crossVectors(currentVector,lastVector);
+
+			axis.normalize();
+			axis['y'] = -axis['y'];
+
+			const quaternion = new THREE.Quaternion();
+			quaternion.setFromAxisAngle( axis, currentVector.distanceTo(lastVector)*10);
+			selectedShape.applyQuaternion( quaternion );	
+
+			lastX = currentX;
+			lastY = currentY;
+			lastZ = currentZ
+			lastVector = currentVector;
+		}
+		else
+		{
+			lastX = (2*event.clientX-xConstrain)/maxConstrain;
+			lastY = (2*event.clientY-yConstrain)/maxConstrain;
+			lastZ = Math.sqrt(3-lastX*lastX-lastY*lastY);
+			lastVector = new THREE.Vector3(lastX,lastY,lastZ);
+		}
+	}
 }, false);
 
 function animate() {
