@@ -224,14 +224,14 @@ document.addEventListener('keydown', function (event) {
 	else if (event.key == "o")
 	{
 		const quaternion = new THREE.Quaternion();
-		quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / 180 );
+		quaternion.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), Math.PI / 180 );
 		selectedShape.applyQuaternion( quaternion );
 	}
 
 	else if (event.key == "p")
 	{
 		const quaternion = new THREE.Quaternion();
-		quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), -Math.PI / 180 );
+		quaternion.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), -Math.PI / 180 );
 		selectedShape.applyQuaternion( quaternion );
 	}
 
@@ -249,17 +249,17 @@ document.addEventListener('keydown', function (event) {
 		selectedShape.applyQuaternion( quaternion );
 	}
 
-	else if (event.key == "n")
+	else if (event.key == "b")
 	{
 		const quaternion = new THREE.Quaternion();
-		quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / 180 );
+		quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), Math.PI / 180 );
 		selectedShape.applyQuaternion( quaternion );
 	}
 
-	else if (event.key == "m")
+	else if (event.key == "n")
 	{
 		const quaternion = new THREE.Quaternion();
-		quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), -Math.PI / 180 );
+		quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), -Math.PI / 180 );
 		selectedShape.applyQuaternion( quaternion );
 	}
 
