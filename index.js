@@ -21,6 +21,19 @@ const loader = new OBJLoader();
 let primitives = 0;
 let bbox;
 
+function setMaterialProperties(object){
+	object.metalness = 0.2;
+	object.roughness = 0.1;
+	object.emissive = new THREE.Color(0xffffff);
+	object.reflectivity = 0.4;
+	object.aoMapIntensity = 0.3;
+	object.emissiveIntensity = 0.1;
+	object.lightMapIntensity = 0.3;
+	object.flatShading = false;
+
+}
+
+
 function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 
 	loader.load(
@@ -30,7 +43,11 @@ function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 		function (object) {
 			object.traverse(function (obj) {
 				if (obj.isMesh) {
+					// obj.geometry.mergeVertices()
+					obj.material = new THREE.MeshStandardMaterial()
+					setMaterialProperties(obj.material)
 					obj.material.color.setHex(objColor);
+					console.log(obj)
 				}
 			});
 
@@ -41,7 +58,7 @@ function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 			object.position['x'] = pos[0]
 			object.position['y'] = pos[1]
 			object.position['z'] = pos[2]
-
+			// setMaterialProperties(object)
 			console.log(object)
 			scene.add(object);
 			bbox = new THREE.Box3().setFromObject(scene.getObjectByName(objID))
@@ -49,9 +66,6 @@ function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 
 		},
 	);
-	// if(scale!=null && scale != undefined){
-	// 	scene.getObjectByName(objID).scale.set(scale[0],scale[1],scale[2]);
-	// }
 	primitives += 1;
 }
 
@@ -76,27 +90,24 @@ function computeLimits(bbox) {
 loadMeshObj('./sphere.obj', (primitives + 3).toString(), 0x00ff00, [1,1,1],[-2.5,2.25,0]);
 loadMeshObj('./teapot.obj', (primitives + 3).toString(), 0xff0000, [0.5,0.5,0.5],[1.25,-1.75,0]);
 
-// if(scene.getObjectByName('4') != undefined){
-// 	scene.getObjectByName("4").scale = new THREE.Vector3(0.5,0.5,0.5);
-// }
-// console.log(scene.getObjectByName('4'));
-// scene.getObjectByName("4").scale = new THREE.Vector3(0.5,0.5,0.5);
 
 let light = new THREE.AmbientLight(0xffffff)
 light.name = "light"
 scene.add(light)
 scene.getObjectByName("light").visible = false;
 
+let decay = 15
+
 const l3 = new THREE.PointLight( 0xffffff, 1, 100);
 l3.position.set( 0, 0, 0 );
 l3.name = "l3";
-l3.decay = 2
+l3.decay = decay
 scene.add( l3 );
 
 const l4 = new THREE.PointLight( 0xffffff, 1, 100 );
 l4.position.set( 0, 0, 0 );
 l4.name = "l4";
-l4.decay = 2;
+l4.decay = decay;
 scene.add( l4 );
 
 camera.position.z = 5;
@@ -127,17 +138,19 @@ document.addEventListener('keydown', function (event) {
 		selectedShape.traverse(function (obj) {
 			if (obj.isMesh) {
 				let col = obj.material.color
-				if(obj.material.type == 'MeshPhongMaterial'){
+				if(obj.material.type == 'MeshStandardMaterial'){
 					obj.material.dispose()
 					obj.material = new THREE.MeshLambertMaterial()
 				} else {
 					obj.material.dispose()
-					obj.material = new THREE.MeshPhongMaterial()
+					obj.material = new THREE.MeshStandardMaterial()
+					setMaterialProperties(obj.material)
 				}
 				obj.material.needsUpdate = true;
-				
+				// obj.geometry.mergeVertices()
 				obj.material.color = col;
 			}
+			console.log(obj.material)
 		});
 		
 	}
