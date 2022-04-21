@@ -144,13 +144,14 @@ document.addEventListener('keydown', function (event) {
 		selectedShape.traverse(function (obj) {
 			if (obj.isMesh) {
 				let col = obj.material.color
-				if(obj.material.type == 'MeshStandardMaterial'){
+				if(obj.material.type == 'MeshPhongMaterial'){
 					obj.material.dispose()
 					obj.material = new THREE.MeshLambertMaterial()
 				} else {
 					obj.material.dispose()
-					obj.material = new THREE.MeshStandardMaterial()
+					obj.material = new THREE.MeshPhongMaterial()
 					setMaterialProperties(obj.material)
+					obj.material.specular = new THREE.Color("rgb(0%,0%,100%)");
 				}
 				obj.material.needsUpdate = true;
 				// obj.geometry.mergeVertices()
