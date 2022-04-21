@@ -31,12 +31,12 @@ function setMaterialProperties(object,ka,kd,ks){
 
 	object.reflectivity = ka; // ambient
 	object.roughness = kd; // diffuse
-	object.specular = new THREE.Color("rgb(ks*255,ks*255,ks*255)") // specular
+	object.specular = new THREE.Color(`rgb(${ks}*255,${ks}*255,${ks}*255)`) // specular
 
 }
 
 
-function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
+function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos, ka, kd, ks) {
 
 	loader.load(
 		// resource URL
@@ -47,7 +47,7 @@ function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 				if (obj.isMesh) {
 					// obj.geometry.mergeVertices()
 					obj.material = new THREE.MeshLambertMaterial()
-					setMaterialProperties(obj.material,0.4,0.4,0.4)
+					setMaterialProperties(obj.material,ka,kd,ks)
 					obj.material.color.setHex(objColor);
 				}
 			});
@@ -86,8 +86,8 @@ function computeLimits(bbox) {
 	return limits;
 }
 
-loadMeshObj('./objects/sphere.obj', (primitives + 3).toString(), 0x00ff00, [1,1,1],[-2.5,2.25,0]);
-loadMeshObj('./objects/teapot.obj', (primitives + 3).toString(), 0xff0000, [0.5,0.5,0.5],[1.25,-1.75,0]);
+loadMeshObj('./objects/sphere.obj', (primitives + 3).toString(), 0x00ff00, [1,1,1],[-2.5,2.25,0],0.4,0.4,0.4);
+loadMeshObj('./objects/teapot.obj', (primitives + 3).toString(), 0xff0000, [0.5,0.5,0.5],[1.25,-1.75,0], 0.6,0.6,0.6);
 
 
 // let light = new THREE.AmbientLight(0xffffff)
