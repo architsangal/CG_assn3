@@ -21,15 +21,17 @@ const loader = new OBJLoader();
 let primitives = 0;
 let bbox;
 
-function setMaterialProperties(object){
+function setMaterialProperties(object,ka,kd,ks){
 	object.metalness = 0.2;
-	object.roughness = 0.1;
 	object.emissive = new THREE.Color(0xffffff);
-	object.reflectivity = 0.4;
 	object.aoMapIntensity = 0.3;
 	object.emissiveIntensity = 0;
 	object.lightMapIntensity = 0.3;
 	object.flatShading = false;
+
+	object.reflectivity = ka; // ambient
+	object.roughness = kd; // diffuse
+	object.specular = new THREE.Color("rgb(ks*255,ks*255,ks*255)") // specular
 
 }
 
@@ -45,7 +47,7 @@ function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 				if (obj.isMesh) {
 					// obj.geometry.mergeVertices()
 					obj.material = new THREE.MeshLambertMaterial()
-					setMaterialProperties(obj.material)
+					setMaterialProperties(obj.material,0.4,0.4,0.4)
 					obj.material.color.setHex(objColor);
 				}
 			});
@@ -150,8 +152,7 @@ document.addEventListener('keydown', function (event) {
 				} else {
 					obj.material.dispose()
 					obj.material = new THREE.MeshPhongMaterial()
-					setMaterialProperties(obj.material)
-					obj.material.specular = new THREE.Color("rgb(0%,0%,100%)");
+					setMaterialProperties(obj.material,0.4,0.3,0.4)
 				}
 				obj.material.needsUpdate = true;
 				// obj.geometry.mergeVertices()
