@@ -27,7 +27,7 @@ function setMaterialProperties(object){
 	object.emissive = new THREE.Color(0xffffff);
 	object.reflectivity = 0.4;
 	object.aoMapIntensity = 0.3;
-	object.emissiveIntensity = 0.1;
+	object.emissiveIntensity = 0;
 	object.lightMapIntensity = 0.3;
 	object.flatShading = false;
 
@@ -44,7 +44,7 @@ function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 			object.traverse(function (obj) {
 				if (obj.isMesh) {
 					// obj.geometry.mergeVertices()
-					obj.material = new THREE.MeshStandardMaterial()
+					obj.material = new THREE.MeshLambertMaterial()
 					setMaterialProperties(obj.material)
 					obj.material.color.setHex(objColor);
 				}
@@ -57,7 +57,6 @@ function loadMeshObj(file, objID, objColor, scale = [1,1,1], pos) {
 			object.position['x'] = pos[0]
 			object.position['y'] = pos[1]
 			object.position['z'] = pos[2]
-			// setMaterialProperties(object)
 			scene.add(object);
 			bbox = new THREE.Box3().setFromObject(scene.getObjectByName(objID))
 
@@ -89,12 +88,12 @@ loadMeshObj('./objects/sphere.obj', (primitives + 3).toString(), 0x00ff00, [1,1,
 loadMeshObj('./objects/teapot.obj', (primitives + 3).toString(), 0xff0000, [0.5,0.5,0.5],[1.25,-1.75,0]);
 
 
-let light = new THREE.AmbientLight(0xffffff)
-light.name = "light"
-scene.add(light)
-scene.getObjectByName("light").visible = false;
+// let light = new THREE.AmbientLight(0xffffff)
+// light.name = "light"
+// scene.add(light)
+// scene.getObjectByName("light").visible = false;
 
-let decay = 15
+let decay = 2
 
 const l3 = new THREE.PointLight( 0xffffff, 1, 100);
 l3.position.set( 0, 0, 0 );
@@ -108,6 +107,11 @@ l4.name = "l4";
 l4.decay = decay;
 scene.add( l4 );
 
+// const l4 = new THREE.SpotLight( 0xffffff,1,0,(Math.PI/2),0,decay);
+// l4.position.set( 0, 0, 0 );
+// l4.name = "l4";
+// scene.add( l4 );
+
 camera.position.z = 5;
 
 let mode = "none";
@@ -117,6 +121,9 @@ let offset = 1.5;
 
 document.addEventListener('keydown', function (event) {
 	console.log("Key pressed = ", event.key);
+	if(event.key != "i" && event.key != "m"){
+		console.log("mode = ", mode);
+	}
 	
 	let limits;
 	if(mode == "i"){
@@ -129,6 +136,7 @@ document.addEventListener('keydown', function (event) {
 	if (event.key == "m") {
 		mode = "m";
 		selectedShape = null
+		console.log("mode = ", mode);	
 	}
 
 	else if(event.key == "s"){
@@ -155,6 +163,7 @@ document.addEventListener('keydown', function (event) {
 	else if (event.key == "i") {
 		selectedShape = null;
 		mode = "i";
+		console.log("mode = ", mode);
 	}
 
 	else if (event.key == "x") {
@@ -320,7 +329,7 @@ document.addEventListener('mousedown', function(event)
 
 document.addEventListener('mousemove', function(event)
 {
-	if(mousedown == 1)
+	if(mousedown == 1 && mode == "m")
 	{
 		if(lastX != undefined && lastY != undefined && lastY != undefined)
 		{
@@ -343,7 +352,7 @@ document.addEventListener('mousemove', function(event)
 			lastZ = currentZ
 			lastVector = currentVector;
 		}
-		else
+		else if(mode == "m")
 		{
 			lastX = (2*event.clientX-xConstrain)/maxConstrain;
 			lastY = (2*event.clientY-yConstrain)/maxConstrain;
