@@ -13,7 +13,7 @@ For details on how to use the project refer to the PDF `CS 606 T2 2021-22 Assign
 
 (Or)
 
-Watch the Video - `video.mp4` in folder `DemoVideo`
+Watch the Video - [https://vimeo.com/701768114](https://vimeo.com/701768114)
 
 - Mode 'transform' for transforming(rotating,translating) shape
 - Mode `illumination` for translating and turning on/off individual point lights
